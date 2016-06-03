@@ -17,6 +17,17 @@ for {
 }
 ```
 
+if you are on windows and want to display ANSI colors, use <a href="https://github.com/mattn/go-colorable">go-colorable</a>.
+
+```
+tty := tty.New()
+defer tty.Close()
+
+out := colorable.NewColorable(tty)
+
+fmt.Fprintln(out, "\x1b[2J")
+```
+
 ## Installation
 
 ```
