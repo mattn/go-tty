@@ -19,7 +19,7 @@ for {
 
 if you are on windows and want to display ANSI colors, use <a href="https://github.com/mattn/go-colorable">go-colorable</a>.
 
-```
+```go
 tty := tty.New()
 defer tty.Close()
 
