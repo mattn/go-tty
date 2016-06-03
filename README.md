@@ -23,7 +23,7 @@ if you are on windows and want to display ANSI colors, use <a href="https://gith
 tty := tty.New()
 defer tty.Close()
 
-out := colorable.NewColorable(tty)
+out := colorable.NewColorable(tty.Output())
 
 fmt.Fprintln(out, "\x1b[2J")
 ```
