@@ -5,7 +5,10 @@ Simple tty utility
 ## Usage
 
 ```go
-tty := tty.New()
+tty, err := tty.Open()
+if err != nil {
+	log.Fatal(err)
+}
 defer tty.Close()
 
 for {
@@ -20,7 +23,10 @@ for {
 if you are on windows and want to display ANSI colors, use <a href="https://github.com/mattn/go-colorable">go-colorable</a>.
 
 ```go
-tty := tty.New()
+tty, err := tty.Open()
+if err != nil {
+	log.Fatal(err)
+}
 defer tty.Close()
 
 out := colorable.NewColorable(tty.Output())
