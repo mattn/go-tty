@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-func New() (*TTY, error) {
+func Open() (*TTY, error) {
 	return open()
 }
 
