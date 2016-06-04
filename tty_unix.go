@@ -61,10 +61,10 @@ func (tty *TTY) size() (int, int, error) {
 	return int(dim[1]), int(dim[0]), nil
 }
 
-func (tty *TTY) Input() *os.File {
+func (tty *TTY) input() *os.File {
 	return tty.in
 }
 
-func (tty *TTY) Output() *os.File {
+func (tty *TTY) output() *os.File {
 	return tty.out
 }
