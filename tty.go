@@ -2,6 +2,7 @@ package tty
 
 import (
 	"os"
+	"strings"
 	"unicode"
 )
 
@@ -29,7 +30,7 @@ func (tty *TTY) Output() *os.File {
 	return tty.output()
 }
 
-func (tty *TTY) ReadPassword() (string, error) {
+func (tty *TTY) readPassword() (string, error) {
 	rs := []rune{}
 loop:
 	for {
@@ -52,6 +53,19 @@ loop:
 			}
 		}
 	}
-	tty.Output().WriteString("\n")
 	return string(rs), nil
+}
+
+func (tty *TTY) ReadPassword() (string, error) {
+	defer tty.Output().WriteString("\n")
+	return tty.readPassword()
+}
+
+func (tty *TTY) ReadPasswordClear() (string, error) {
+	s, err := tty.readPassword()
+	tty.Output().WriteString(
+		strings.Repeat("\b", len(s)) +
+			strings.Repeat(" ", len(s)) +
+			strings.Repeat("\b", len(s)))
+	return s, err
 }
