@@ -1,4 +1,5 @@
 // +build !windows
+// +build !plan9
 
 package tty
 
