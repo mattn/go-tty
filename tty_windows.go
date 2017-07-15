@@ -11,6 +11,15 @@ import (
 )
 
 const (
+	rightAltPressed  = 1
+	leftAltPressed   = 2
+	rightCtrlPressed = 4
+	leftCtrlPressed  = 8
+	ctrlPressed      = rightCtrlPressed | leftCtrlPressed
+	altPressed       = rightAltPressed | leftAltPressed
+)
+
+const (
 	enableProcessedInput = 0x1
 	enableLineInput      = 0x2
 	enableEchoInput      = 0x4
@@ -112,6 +121,7 @@ type TTY struct {
 	in  *os.File
 	out *os.File
 	st  uint32
+	rs  []rune
 }
 
 func readConsoleInput(fd uintptr, record *inputRecord) (err error) {
@@ -171,6 +181,11 @@ func open() (*TTY, error) {
 }
 
 func (tty *TTY) readRune() (rune, error) {
+	if len(tty.rs) > 0 {
+		r := tty.rs[0]
+		tty.rs = tty.rs[1:]
+		return r, nil
+	}
 	var ir inputRecord
 	err := readConsoleInput(tty.in.Fd(), &ir)
 	if err != nil {
@@ -180,7 +195,26 @@ func (tty *TTY) readRune() (rune, error) {
 	if ir.eventType == keyEvent {
 		kr := (*keyEventRecord)(unsafe.Pointer(&ir.event))
 		if kr.keyDown != 0 {
-			return rune(kr.unicodeChar), nil
+			if kr.unicodeChar > 0 {
+				return rune(kr.unicodeChar), nil
+			}
+			switch kr.virtualKeyCode {
+			case 0x25: // left
+				tty.rs = []rune{0x5b, 0x44}
+				return rune(0x1b), nil
+			case 0x26: // up
+				tty.rs = []rune{0x5b, 0x41}
+				return rune(0x1b), nil
+			case 0x27: // right
+				tty.rs = []rune{0x5b, 0x43}
+				return rune(0x1b), nil
+			case 0x28: // down
+				tty.rs = []rune{0x5b, 0x42}
+				return rune(0x1b), nil
+			case 0x2e: // delete
+				return rune(0x7f), nil
+			}
+			return 0, nil
 		}
 	}
 	return 0, nil
