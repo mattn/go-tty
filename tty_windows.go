@@ -206,7 +206,20 @@ func (tty *TTY) readRune() (rune, error) {
 			if kr.unicodeChar > 0 {
 				return rune(kr.unicodeChar), nil
 			}
-			switch kr.virtualKeyCode {
+			vk := kr.virtualKeyCode
+			switch vk {
+			case 0x21: // page-up
+				tty.rs = []rune{0x5b, 0x35, 0x7e}
+				return rune(0x1b), nil
+			case 0x22: // page-down
+				tty.rs = []rune{0x5b, 0x36, 0x7e}
+				return rune(0x1b), nil
+			case 0x23: // end
+				tty.rs = []rune{0x5b, 0x46}
+				return rune(0x1b), nil
+			case 0x24: // home
+				tty.rs = []rune{0x5b, 0x48}
+				return rune(0x1b), nil
 			case 0x25: // left
 				tty.rs = []rune{0x5b, 0x44}
 				return rune(0x1b), nil
@@ -221,6 +234,18 @@ func (tty *TTY) readRune() (rune, error) {
 				return rune(0x1b), nil
 			case 0x2e: // delete
 				tty.rs = []rune{0x5b, 0x33, 0x7e}
+				return rune(0x1b), nil
+			case 0x70, 0x71, 0x72, 0x73: // F1,F2,F3,F4
+				tty.rs = []rune{0x5b, 0x4f, rune(vk) - 0x20}
+				return rune(0x1b), nil
+			case 0x074, 0x75, 0x76, 0x77: // F5,F6,F7,F8
+				tty.rs = []rune{0x5b, 0x31, rune(vk) - 0x3f, 0x7e}
+				return rune(0x1b), nil
+			case 0x78, 0x79: // F9,F10
+				tty.rs = []rune{0x5b, 0x32, rune(vk) - 0x48, 0x7e}
+				return rune(0x1b), nil
+			case 0x7a, 0x7b: // F11,F12
+				tty.rs = []rune{0x5b, 0x32, rune(vk) - 0x47, 0x7e}
 				return rune(0x1b), nil
 			}
 			return 0, nil

@@ -14,6 +14,7 @@ func main() {
 	}
 	defer t.Close()
 
+	fmt.Println("Hit any key")
 	for {
 		r, err := t.ReadRune()
 		if err != nil {

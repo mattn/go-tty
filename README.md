@@ -42,9 +42,6 @@ $ go get github.com/mattn/go-tty
 
 ## TOOD
 
-### Windows
-
-* Function Keys
 
 ## License
 
