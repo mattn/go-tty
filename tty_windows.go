@@ -199,6 +199,10 @@ func (tty *TTY) readRune() (rune, error) {
 	if ir.eventType == keyEvent {
 		kr := (*keyEventRecord)(unsafe.Pointer(&ir.event))
 		if kr.keyDown != 0 {
+			if kr.controlKeyState&altPressed != 0 && kr.unicodeChar > 0 {
+				tty.rs = []rune{rune(kr.unicodeChar)}
+				return rune(0x1b), nil
+			}
 			if kr.unicodeChar > 0 {
 				return rune(kr.unicodeChar), nil
 			}
