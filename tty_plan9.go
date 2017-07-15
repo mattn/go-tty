@@ -31,7 +31,7 @@ func open() (*TTY, error) {
 	return tty, nil
 }
 
-func (tty *TTY) inbuf() bool {
+func (tty *TTY) buffered() bool {
 	return tty.bin.Buffered() > 0
 }
 
