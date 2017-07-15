@@ -38,7 +38,7 @@ func open() (*TTY, error) {
 	}
 	newios := tty.termios
 	newios.Iflag &^= syscall.ISTRIP | syscall.INLCR | syscall.ICRNL | syscall.IGNCR | syscall.IXON | syscall.IXOFF
-	newios.Lflag &^= syscall.ECHO | syscall.ICANON | syscall.ISIG
+	newios.Lflag &^= syscall.ECHO | syscall.ICANON /*| syscall.ISIG*/
 	if _, _, err := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(tty.in.Fd()), ioctlWriteTermios, uintptr(unsafe.Pointer(&newios)), 0, 0, 0); err != 0 {
 		return nil, err
 	}
