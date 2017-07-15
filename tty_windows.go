@@ -212,7 +212,8 @@ func (tty *TTY) readRune() (rune, error) {
 				tty.rs = []rune{0x5b, 0x42}
 				return rune(0x1b), nil
 			case 0x2e: // delete
-				return rune(0x7f), nil
+				tty.rs = []rune{0x5b, 0x33, 0x7e}
+				return rune(0x1b), nil
 			}
 			return 0, nil
 		}
