@@ -45,6 +45,10 @@ func open() (*TTY, error) {
 	return tty, nil
 }
 
+func (tty *TTY) inbuf() bool {
+	return tty.bin.Buffered() > 0
+}
+
 func (tty *TTY) readRune() (rune, error) {
 	r, _, err := tty.bin.ReadRune()
 	return r, err

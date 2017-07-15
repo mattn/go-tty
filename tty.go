@@ -10,6 +10,10 @@ func Open() (*TTY, error) {
 	return open()
 }
 
+func (tty *TTY) Inbuf() bool {
+	return tty.inbuf()
+}
+
 func (tty *TTY) ReadRune() (rune, error) {
 	return tty.readRune()
 }

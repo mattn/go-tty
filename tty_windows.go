@@ -180,6 +180,10 @@ func open() (*TTY, error) {
 	return tty, nil
 }
 
+func (tty *TTY) inbuf() bool {
+	return len(tty.rs) > 0
+}
+
 func (tty *TTY) readRune() (rune, error) {
 	if len(tty.rs) > 0 {
 		r := tty.rs[0]

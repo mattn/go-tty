@@ -8,6 +8,7 @@ import (
 
 type TTY struct {
 	in  *os.File
+	bin *bufio.Reader
 	out *os.File
 }
 
@@ -28,6 +29,10 @@ func open() (*TTY, error) {
 	tty.out = out
 
 	return tty, nil
+}
+
+func (tty *TTY) inbuf() bool {
+	return tty.bin.Buffered() > 0
 }
 
 func (tty *TTY) readRune() (rune, error) {
