@@ -40,6 +40,12 @@ fmt.Fprintln(out, "\x1b[2J")
 $ go get github.com/mattn/go-tty
 ```
 
+## TOOD
+
+### Windows
+
+* Function Keys
+
 ## License
 
 MIT
