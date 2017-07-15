@@ -12,6 +12,7 @@ import (
 
 type TTY struct {
 	in      *os.File
+	bin     *bufio.Reader
 	out     *os.File
 	termios syscall.Termios
 }
@@ -24,6 +25,7 @@ func open() (*TTY, error) {
 		return nil, err
 	}
 	tty.in = in
+	tty.bin = bufio.NewReader(in)
 
 	out, err := os.OpenFile("/dev/tty", syscall.O_WRONLY, 0)
 	if err != nil {
@@ -44,8 +46,7 @@ func open() (*TTY, error) {
 }
 
 func (tty *TTY) readRune() (rune, error) {
-	in := bufio.NewReader(tty.in)
-	r, _, err := in.ReadRune()
+	r, _, err := tty.bin.ReadRune()
 	return r, err
 }
 
