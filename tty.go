@@ -34,7 +34,7 @@ func (tty *TTY) Output() *os.File {
 	return tty.output()
 }
 
-func (tty *TTY) readPassword() (string, error) {
+func (tty *TTY) readString(isPassword bool) (string, error) {
 	rs := []rune{}
 loop:
 	for {
@@ -53,20 +53,29 @@ loop:
 		default:
 			if unicode.IsPrint(r) {
 				rs = append(rs, r)
-				tty.Output().WriteString("*")
+				if isPassword {
+					tty.Output().WriteString("*")
+				} else {
+					tty.Output().WriteString(string(r))
+				}
 			}
 		}
 	}
 	return string(rs), nil
 }
 
+func (tty *TTY) ReadString() (string, error) {
+	defer tty.Output().WriteString("\n")
+	return tty.readString(false)
+}
+
 func (tty *TTY) ReadPassword() (string, error) {
 	defer tty.Output().WriteString("\n")
-	return tty.readPassword()
+	return tty.readString(true)
 }
 
 func (tty *TTY) ReadPasswordClear() (string, error) {
-	s, err := tty.readPassword()
+	s, err := tty.readString(true)
 	tty.Output().WriteString(
 		strings.Repeat("\b", len(s)) +
 			strings.Repeat(" ", len(s)) +
