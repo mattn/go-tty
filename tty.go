@@ -45,7 +45,7 @@ loop:
 		switch r {
 		case 13:
 			break loop
-		case 8:
+		case 8, 127:
 			if len(rs) > 0 {
 				rs = rs[:len(rs)-1]
 				tty.Output().WriteString("\b \b")
