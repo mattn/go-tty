@@ -84,7 +84,7 @@ func (tty *TTY) ReadPassword() (string, error) {
 	return tty.readString(displayMask)
 }
 
-func (tty *TTY) ReadPasswordNoMask() (string, error) {
+func (tty *TTY) ReadPasswordNoEcho() (string, error) {
 	defer tty.Output().WriteString("\n")
 	return tty.readString(displayNone)
 }
