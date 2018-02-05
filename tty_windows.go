@@ -29,6 +29,9 @@ const (
 	enableQuickEditMode  = 0x40
 	enableExtendedFlag   = 0x80
 
+	enableProcessedOutput = 1
+	enableWrapAtEolOutput = 2
+
 	keyEvent              = 0x1
 	mouseEvent            = 0x2
 	windowBufferSizeEvent = 0x4
@@ -274,4 +277,24 @@ func (tty *TTY) input() *os.File {
 
 func (tty *TTY) output() *os.File {
 	return tty.out
+}
+
+func (tty *TTY) raw() (func() error, error) {
+	var st uint32
+	r1, _, err := procGetConsoleMode.Call(tty.in.Fd(), uintptr(unsafe.Pointer(&st)))
+	if r1 == 0 {
+		return nil, err
+	}
+	mode := st &^ (enableEchoInput | enableProcessedInput | enableLineInput | enableProcessedOutput)
+	r1, _, err = procSetConsoleMode.Call(tty.in.Fd(), uintptr(mode))
+	if r1 == 0 {
+		return nil, err
+	}
+	return func() error {
+		r1, _, err := procSetConsoleMode.Call(tty.in.Fd(), uintptr(st))
+		if r1 == 0 {
+			return err
+		}
+		return nil
+	}, nil
 }

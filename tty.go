@@ -10,6 +10,18 @@ func Open() (*TTY, error) {
 	return open()
 }
 
+func (tty *TTY) Raw() (func() error, error) {
+	return tty.raw()
+}
+
+func (tty *TTY) MustRaw() func() error {
+	f, err := tty.raw()
+	if err != nil {
+		panic(err.Error())
+	}
+	return f
+}
+
 func (tty *TTY) Buffered() bool {
 	return tty.buffered()
 }
