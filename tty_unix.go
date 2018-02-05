@@ -78,7 +78,7 @@ func (tty *TTY) output() *os.File {
 }
 
 func (tty *TTY) raw() (func() error, error) {
-	termios, err := unix.IoctlGetTermios(fd, ioctlReadTermios)
+	termios, err := unix.IoctlGetTermios(tty.in.Fd(), ioctlReadTermios)
 	if err != nil {
 		return nil, err
 	}
@@ -90,12 +90,12 @@ func (tty *TTY) raw() (func() error, error) {
 	termios.Cflag |= unix.CS8
 	termios.Cc[unix.VMIN] = 1
 	termios.Cc[unix.VTIME] = 0
-	if err := unix.IoctlSetTermios(fd, ioctlWriteTermios, termios); err != nil {
+	if err := unix.IoctlSetTermios(tty.in.Fd(), ioctlWriteTermios, termios); err != nil {
 		return nil, err
 	}
 
 	return func() error {
-		if err := unix.IoctlSetTermios(fd, ioctlWriteTermios, termios); err != nil {
+		if err := unix.IoctlSetTermios(tty.in.Fd(), ioctlWriteTermios, termios); err != nil {
 			return err
 		}
 		return nil
