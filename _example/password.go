@@ -3,22 +3,27 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/mattn/go-tty"
-	//"os"
-	//"os/signal"
 )
 
 func main() {
 	tty, err := tty.Open()
 	defer tty.Close()
 
-	fmt.Print("Password: ")
-	s, err := tty.ReadPassword()
+	fmt.Print("Username: ")
+	username, err := tty.ReadString()
 	if err != nil {
 		println("canceled")
 		return
 	}
-	fmt.Println(s)
+	fmt.Print("Password: ")
+	password, err := tty.ReadPassword()
+	if err != nil {
+		println("canceled")
+		return
+	}
+	fmt.Println(base64.StdEncoding.EncodeToString([]byte(username + ":" + password)))
 }
