@@ -276,7 +276,7 @@ func (tty *TTY) size() (int, int, error) {
 	if r1 == 0 {
 		return 0, 0, err
 	}
-	return int(csbi.window.right - csbi.window.left), int(csbi.window.bottom - csbi.window.top), nil
+	return int(csbi.window.right - csbi.window.left + 1), int(csbi.window.bottom - csbi.window.top + 1), nil
 }
 
 func (tty *TTY) input() *os.File {
