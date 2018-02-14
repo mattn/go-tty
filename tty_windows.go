@@ -15,6 +15,7 @@ const (
 	leftAltPressed   = 2
 	rightCtrlPressed = 4
 	leftCtrlPressed  = 8
+	shiftPressed     = 0x0010
 	ctrlPressed      = rightCtrlPressed | leftCtrlPressed
 	altPressed       = rightAltPressed | leftAltPressed
 )
@@ -207,6 +208,13 @@ func (tty *TTY) readRune() (rune, error) {
 				return rune(0x1b), nil
 			}
 			if kr.unicodeChar > 0 {
+				if kr.controlKeyState&shiftPressed != 0 {
+					switch kr.unicodeChar {
+					case 0x09:
+						tty.rs = []rune{0x5b, 0x5a}
+						return rune(0x1b), nil
+					}
+				}
 				return rune(kr.unicodeChar), nil
 			}
 			vk := kr.virtualKeyCode
