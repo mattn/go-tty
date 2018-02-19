@@ -124,3 +124,7 @@ func (tty *TTY) raw() (func() error, error) {
 		return nil
 	}, nil
 }
+
+func (tty *TTY) sigwinch() chan WINSIZE {
+	return tty.ws
+}
