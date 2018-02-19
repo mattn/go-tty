@@ -56,7 +56,7 @@ func open() (*TTY, error) {
 			switch sig {
 			case syscall.SIGWINCH:
 				if w, h, err := tty.size(); err == nil {
-					tty.ws = WINSIZE{
+					tty.ws <- WINSIZE{
 						W: w,
 						H: h,
 					}
