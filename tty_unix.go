@@ -86,11 +86,16 @@ func (tty *TTY) close() error {
 }
 
 func (tty *TTY) size() (int, int, error) {
+	x, y, _, _, err := tty.sizePixel()
+	return x, y, err
+}
+
+func (tty *TTY) sizePixel() (int, int, int, int, error) {
 	var dim [4]uint16
 	if _, _, err := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(tty.out.Fd()), uintptr(syscall.TIOCGWINSZ), uintptr(unsafe.Pointer(&dim)), 0, 0, 0); err != 0 {
-		return -1, -1, err
+		return -1, -1, -1, -1, err
 	}
-	return int(dim[1]), int(dim[0]), nil
+	return int(dim[1]), int(dim[0]), int(dim[2]), int(dim[3]), nil
 }
 
 func (tty *TTY) input() *os.File {

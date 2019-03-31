@@ -4,6 +4,7 @@ package tty
 
 import (
 	"os"
+	"errors"
 	"syscall"
 	"unsafe"
 
@@ -285,9 +286,18 @@ func (tty *TTY) size() (int, int, error) {
 	var csbi consoleScreenBufferInfo
 	r1, _, err := procGetConsoleScreenBufferInfo.Call(tty.out.Fd(), uintptr(unsafe.Pointer(&csbi)))
 	if r1 == 0 {
-		return 0, 0, err
+			return 0, 0, err
 	}
 	return int(csbi.window.right - csbi.window.left + 1), int(csbi.window.bottom - csbi.window.top + 1), nil
+}
+
+func (tty *TTY) sizePixel() (int, int, int, int, error) {
+	x, y, err := tty.size()
+	if err != nil {
+		x = -1
+		y = -1
+	}
+	return x, y, -1, -1, errors.New("no implemented method for querying size in pixels on Windows")
 }
 
 func (tty *TTY) input() *os.File {
