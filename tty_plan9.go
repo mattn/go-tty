@@ -57,7 +57,7 @@ func (tty *TTY) size() (int, int, error) {
 
 func (tty *TTY) sizePixel() (int, int, int, int, error) {
 	x, y, _ := tty.size()
-	return x, y, -1, -1, errors.New("no implemented method for querying size in pixels on Windows")
+	return x, y, -1, -1, errors.New("no implemented method for querying size in pixels on Plan 9")
 }
 
 func (tty *TTY) input() *os.File {
