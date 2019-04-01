@@ -286,7 +286,7 @@ func (tty *TTY) size() (int, int, error) {
 	var csbi consoleScreenBufferInfo
 	r1, _, err := procGetConsoleScreenBufferInfo.Call(tty.out.Fd(), uintptr(unsafe.Pointer(&csbi)))
 	if r1 == 0 {
-			return 0, 0, err
+		return 0, 0, err
 	}
 	return int(csbi.window.right - csbi.window.left + 1), int(csbi.window.bottom - csbi.window.top + 1), nil
 }

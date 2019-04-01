@@ -6,7 +6,7 @@ import (
 	"syscall"
 	"errors"
 )
-s
+
 type TTY struct {
 	in  *os.File
 	bin *bufio.Reader
