@@ -35,8 +35,7 @@ func (tty *TTY) Close() error {
 }
 
 func (tty *TTY) Size() (int, int, error) {
-	x, y, err := tty.size()
-	return x, y, err
+	return tty.size()
 }
 
 func (tty *TTY) SizePixel() (int, int, int, int, error) {
