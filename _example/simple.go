@@ -22,6 +22,12 @@ func main() {
 		}
 	}()
 
+	clean,err := t.Raw()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer clean()
+
 	fmt.Println("Hit any key")
 	for {
 		r, err := t.ReadRune()

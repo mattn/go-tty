@@ -228,6 +228,22 @@ func (tty *TTY) readRune() (rune, error) {
 				return rune(kr.unicodeChar), nil
 			}
 			vk := kr.virtualKeyCode
+			if kr.controlKeyState&ctrlPressed != 0 {
+				switch vk {
+				case 0x25: // ctrl-left
+					tty.rs = []rune{0x5b, 0x31, 0x3B, 0x35, 0x44}
+					return rune(0x1b), nil
+				case 0x26: // ctrl-up
+					tty.rs = []rune{0x5b, 0x31, 0x3B, 0x35, 0x41}
+					return rune(0x1b), nil
+				case 0x27: // ctrl-right
+					tty.rs = []rune{0x5b, 0x31, 0x3B, 0x35, 0x43}
+					return rune(0x1b), nil
+				case 0x28: // ctrl-down
+					tty.rs = []rune{0x5b, 0x31, 0x3B, 0x35, 0x42}
+					return rune(0x1b), nil
+				}
+			}
 			switch vk {
 			case 0x21: // page-up
 				tty.rs = []rune{0x5b, 0x35, 0x7e}
