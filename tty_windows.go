@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/mattn/go-isatty"
+	isatty "github.com/mattn/go-isatty"
 )
 
 const (
@@ -122,11 +122,12 @@ type charInfo struct {
 }
 
 type TTY struct {
-	in  *os.File
-	out *os.File
-	st  uint32
-	rs  []rune
-	ws  chan WINSIZE
+	in     *os.File
+	out    *os.File
+	st     uint32
+	rs     []rune
+	ws     chan WINSIZE
+	closeC chan interface{}
 }
 
 func readConsoleInput(fd uintptr, record *inputRecord) (err error) {
@@ -183,6 +184,7 @@ func open() (*TTY, error) {
 	procSetConsoleMode.Call(h, uintptr(st))
 
 	tty.ws = make(chan WINSIZE)
+	tty.closeC = make(chan interface{})
 
 	return tty, nil
 }
@@ -206,9 +208,19 @@ func (tty *TTY) readRune() (rune, error) {
 	switch ir.eventType {
 	case windowBufferSizeEvent:
 		wr := (*windowBufferSizeRecord)(unsafe.Pointer(&ir.event))
-		tty.ws <- WINSIZE{
+		ws := WINSIZE{
 			W: int(wr.size.x),
 			H: int(wr.size.y),
+		}
+		select {
+		case <-tty.closeC: // closing
+			return 0, nil
+		default:
+		}
+		select {
+		case tty.ws <- ws:
+		default:
+			return 0, nil // no one is currently trying to read
 		}
 	case keyEvent:
 		kr := (*keyEventRecord)(unsafe.Pointer(&ir.event))
@@ -307,8 +319,9 @@ func (tty *TTY) readRune() (rune, error) {
 }
 
 func (tty *TTY) close() error {
-	close(tty.ws)
 	procSetConsoleMode.Call(tty.in.Fd(), uintptr(tty.st))
+	close(tty.closeC)
+	close(tty.ws)
 	return nil
 }
 
