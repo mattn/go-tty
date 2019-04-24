@@ -119,6 +119,6 @@ type WINSIZE struct {
 	H int
 }
 
-func (tty *TTY) SIGWINCH() chan WINSIZE {
+func (tty *TTY) SIGWINCH() <-chan WINSIZE {
 	return tty.sigwinch()
 }

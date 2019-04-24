@@ -18,7 +18,6 @@ type TTY struct {
 	bin     *bufio.Reader
 	out     *os.File
 	termios syscall.Termios
-	ws      chan WINSIZE
 	ss      chan os.Signal
 }
 
@@ -48,24 +47,8 @@ func open() (*TTY, error) {
 		return nil, err
 	}
 
-	tty.ws = make(chan WINSIZE)
 	tty.ss = make(chan os.Signal, 1)
-	signal.Notify(tty.ss, syscall.SIGWINCH)
-	go func() {
-		defer close(tty.ws)
-		for sig := range tty.ss {
-			switch sig {
-			case syscall.SIGWINCH:
-				if w, h, err := tty.size(); err == nil {
-					tty.ws <- WINSIZE{
-						W: w,
-						H: h,
-					}
-				}
-			default:
-			}
-		}
-	}()
+
 	return tty, nil
 }
 
@@ -132,6 +115,28 @@ func (tty *TTY) raw() (func() error, error) {
 	}, nil
 }
 
-func (tty *TTY) sigwinch() chan WINSIZE {
-	return tty.ws
+func (tty *TTY) sigwinch() <-chan WINSIZE {
+	signal.Notify(tty.ss, syscall.SIGWINCH)
+
+	ws := make(chan WINSIZE)
+	go func() {
+		defer close(ws)
+		for sig := range tty.ss {
+			if sig != syscall.SIGWINCH {
+				continue
+			}
+
+			w, h, err := tty.size()
+			if err != nil {
+				continue
+			}
+			// send but do not block for it
+			select {
+			case ws <- WINSIZE{W: w, H: h}:
+			default:
+			}
+
+		}
+	}()
+	return ws
 }
