@@ -1,4 +1,5 @@
 // +build solaris
+
 package tty
 
 import (
