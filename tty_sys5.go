@@ -2,7 +2,7 @@
 package tty
 
 import (
-	"unix"
+	"golang.org/x/sys/unix"
 )
 
 const (
