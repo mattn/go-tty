@@ -37,13 +37,13 @@ func open() (*TTY, error) {
 	}
 	tty.out = out
 
-	if _, _, err := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(tty.in.Fd()), ioctlReadTermios, uintptr(unsafe.Pointer(&tty.termios)), 0, 0, 0); err != 0 {
+	if _, _, err := syscall.Syscall(syscall.SYS_IOCTL, uintptr(tty.in.Fd()), ioctlReadTermios, uintptr(unsafe.Pointer(&tty.termios))); err != 0 {
 		return nil, err
 	}
 	newios := tty.termios
 	newios.Iflag &^= syscall.ISTRIP | syscall.INLCR | syscall.ICRNL | syscall.IGNCR | syscall.IXOFF
 	newios.Lflag &^= syscall.ECHO | syscall.ICANON /*| syscall.ISIG*/
-	if _, _, err := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(tty.in.Fd()), ioctlWriteTermios, uintptr(unsafe.Pointer(&newios)), 0, 0, 0); err != 0 {
+	if _, _, err := syscall.Syscall(syscall.SYS_IOCTL, uintptr(tty.in.Fd()), ioctlWriteTermios, uintptr(unsafe.Pointer(&newios))); err != 0 {
 		return nil, err
 	}
 
@@ -64,7 +64,7 @@ func (tty *TTY) readRune() (rune, error) {
 func (tty *TTY) close() error {
 	signal.Stop(tty.ss)
 	close(tty.ss)
-	_, _, err := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(tty.in.Fd()), ioctlWriteTermios, uintptr(unsafe.Pointer(&tty.termios)), 0, 0, 0)
+	_, _, err := syscall.Syscall(syscall.SYS_IOCTL, uintptr(tty.in.Fd()), ioctlWriteTermios, uintptr(unsafe.Pointer(&tty.termios)))
 	return err
 }
 
@@ -75,7 +75,7 @@ func (tty *TTY) size() (int, int, error) {
 
 func (tty *TTY) sizePixel() (int, int, int, int, error) {
 	var dim [4]uint16
-	if _, _, err := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(tty.out.Fd()), uintptr(syscall.TIOCGWINSZ), uintptr(unsafe.Pointer(&dim)), 0, 0, 0); err != 0 {
+	if _, _, err := syscall.Syscall(syscall.SYS_IOCTL, uintptr(tty.out.Fd()), uintptr(syscall.TIOCGWINSZ), uintptr(unsafe.Pointer(&dim))); err != 0 {
 		return -1, -1, -1, -1, err
 	}
 	return int(dim[1]), int(dim[0]), int(dim[2]), int(dim[3]), nil
