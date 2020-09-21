@@ -131,6 +131,7 @@ type TTY struct {
 	ws                chan WINSIZE
 	sigwinchCtx       context.Context
 	sigwinchCtxCancel context.CancelFunc
+	readNextKeyUp     bool
 }
 
 func readConsoleInput(fd uintptr, record *inputRecord) (err error) {
@@ -231,7 +232,12 @@ func (tty *TTY) readRune() (rune, error) {
 		}
 	case keyEvent:
 		kr := (*keyEventRecord)(unsafe.Pointer(&ir.event))
-		if kr.keyDown != 0 {
+		if kr.keyDown == 0 {
+			if kr.unicodeChar != 0 && tty.readNextKeyUp {
+				tty.readNextKeyUp = false
+				return rune(kr.unicodeChar), nil
+			}
+		} else {
 			if kr.controlKeyState&altPressed != 0 && kr.unicodeChar > 0 {
 				tty.rs = []rune{rune(kr.unicodeChar)}
 				return rune(0x1b), nil
@@ -279,6 +285,11 @@ func (tty *TTY) readRune() (rune, error) {
 				}
 			}
 			switch vk {
+			case 0x12: // menu
+				if kr.controlKeyState&leftAltPressed != 0 {
+					tty.readNextKeyUp = true
+				}
+				return 0, nil
 			case 0x21: // page-up
 				tty.rs = []rune{0x5b, 0x35, 0x7e}
 				return rune(0x1b), nil
