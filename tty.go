@@ -7,7 +7,11 @@ import (
 )
 
 func Open() (*TTY, error) {
-	return open()
+	return open("/dev/tty")
+}
+
+func OpenDevice(path string) (*TTY, error) {
+	return open(path)
 }
 
 func (tty *TTY) Raw() (func() error, error) {
@@ -119,6 +123,6 @@ type WINSIZE struct {
 	H int
 }
 
-func (tty *TTY) SIGWINCH() chan WINSIZE {
+func (tty *TTY) SIGWINCH() <-chan WINSIZE {
 	return tty.sigwinch()
 }
