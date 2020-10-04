@@ -86,7 +86,7 @@ loop:
 				case displayRune:
 					tty.Output().Write([]byte(string(r)))
 				case displayMask:
-					tty.Output().Write([]byte("*"))
+					tty.Output().Write([]byte{'*'})
 				}
 			}
 		}
@@ -95,17 +95,17 @@ loop:
 }
 
 func (tty *TTY) ReadString() (string, error) {
-	defer tty.Output().Write([]byte("\n"))
+	defer tty.Output().Write([]byte{'\n'})
 	return tty.readString(displayRune)
 }
 
 func (tty *TTY) ReadPassword() (string, error) {
-	defer tty.Output().Write([]byte("\n"))
+	defer tty.Output().Write([]byte{'\n'})
 	return tty.readString(displayMask)
 }
 
 func (tty *TTY) ReadPasswordNoEcho() (string, error) {
-	defer tty.Output().Write([]byte("\n"))
+	defer tty.Output().Write([]byte{'\n'})
 	return tty.readString(displayNone)
 }
 
