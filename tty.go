@@ -6,6 +6,8 @@ import (
 	"unicode"
 )
 
+var linefeed = []byte{'\n'}
+
 func Open() (*TTY, error) {
 	return open("/dev/tty")
 }
@@ -95,17 +97,17 @@ loop:
 }
 
 func (tty *TTY) ReadString() (string, error) {
-	defer tty.Output().Write([]byte{'\n'})
+	defer tty.Output().Write(linefeed)
 	return tty.readString(displayRune)
 }
 
 func (tty *TTY) ReadPassword() (string, error) {
-	defer tty.Output().Write([]byte{'\n'})
+	defer tty.Output().Write(linefeed)
 	return tty.readString(displayMask)
 }
 
 func (tty *TTY) ReadPasswordNoEcho() (string, error) {
-	defer tty.Output().Write([]byte{'\n'})
+	defer tty.Output().Write(linefeed)
 	return tty.readString(displayNone)
 }
 
