@@ -235,7 +235,9 @@ func (tty *TTY) readRune() (rune, error) {
 		if kr.keyDown == 0 {
 			if kr.unicodeChar != 0 && tty.readNextKeyUp {
 				tty.readNextKeyUp = false
-				return rune(kr.unicodeChar), nil
+				if 0x2000 <= kr.unicodeChar && kr.unicodeChar < 0x3000 {
+					return rune(kr.unicodeChar), nil
+				}
 			}
 		} else {
 			if kr.controlKeyState&altPressed != 0 && kr.unicodeChar > 0 {
