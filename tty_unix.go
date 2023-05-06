@@ -79,7 +79,7 @@ func (tty *TTY) sizePixel() (int, int, int, int, error) {
 	if err != nil {
 		return -1, -1, -1, -1, err
 	}
-	return int(ws.Row), int(ws.Col), int(ws.Xpixel), int(ws.Ypixel), nil
+	return int(ws.Col), int(ws.Row), int(ws.Xpixel), int(ws.Ypixel), nil
 }
 
 func (tty *TTY) input() *os.File {
