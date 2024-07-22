@@ -64,9 +64,18 @@ func (tty *TTY) readRune() (rune, error) {
 }
 
 func (tty *TTY) close() error {
+	if tty.out == nil {
+		return nil
+	}
 	signal.Stop(tty.ss)
 	close(tty.ss)
-	return unix.IoctlSetTermios(int(tty.in.Fd()), ioctlWriteTermios, &tty.termios)
+	err1 := unix.IoctlSetTermios(int(tty.in.Fd()), ioctlWriteTermios, &tty.termios)
+	err2 := tty.out.Close()
+	tty.out = nil
+	if err1 != nil {
+		return err1
+	}
+	return err2
 }
 
 func (tty *TTY) size() (int, int, error) {
