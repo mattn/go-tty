@@ -1,6 +1,6 @@
 module github.com/mattn/go-tty
 
-go 1.14
+go 1.18
 
 require (
 	github.com/mattn/go-colorable v0.1.13
