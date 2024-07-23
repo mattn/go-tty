@@ -65,10 +65,7 @@ func (tty *TTY) readRune() (rune, error) {
 }
 
 func (tty *TTY) close() error {
-	if tty.out == nil {
-		return nil
-	}
-	if tty.in == nil {
+	if tty.out == nil || tty.in == nil {
 		return nil
 	}
 
