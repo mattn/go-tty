@@ -34,12 +34,15 @@ func open(path string) (*TTY, error) {
 
 	out, err := os.OpenFile(path, unix.O_WRONLY, 0)
 	if err != nil {
+		in.Close()
 		return nil, err
 	}
 	tty.out = out
 
 	termios, err := unix.IoctlGetTermios(int(tty.in.Fd()), ioctlReadTermios)
 	if err != nil {
+		out.Close()
+		in.Close()
 		return nil, err
 	}
 	tty.termios = *termios
@@ -49,6 +52,8 @@ func open(path string) (*TTY, error) {
 	termios.Cc[unix.VMIN] = 1
 	termios.Cc[unix.VTIME] = 0
 	if err := unix.IoctlSetTermios(int(tty.in.Fd()), ioctlWriteTermios, termios); err != nil {
+		out.Close()
+		in.Close()
 		return nil, err
 	}
 
